@@ -27,6 +27,10 @@ public class Clock extends JFrame implements ActionListener {
 
 	private Toolkit toolkit;
 
+	private ClockAdjuster clockAdjuster = new ClockAdjuster();
+
+	private KeyListener keyListener = new KeyListener();
+
 	static private Timer timer;
 
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss");
@@ -74,7 +78,6 @@ public class Clock extends JFrame implements ActionListener {
 		updateGameClock();
 		resetShotClock();
 		
-		KeyListener keyListener = new KeyListener();
 		addKeyListener(keyListener);
 		playTimeField.addKeyListener(keyListener);
 		shotClockField.addKeyListener(keyListener);
@@ -131,6 +134,14 @@ public class Clock extends JFrame implements ActionListener {
 						SwingUtilities.invokeLater(new Buzzer());
 					}
 					break;
+				case KeyEvent.VK_F5:
+					log("xpert request: timer running = " + timer.isRunning());
+					if (! timer.isRunning()) {
+						getContentPane().setBackground(Color.GRAY);
+						removeKeyListener(this);
+						addKeyListener(clockAdjuster);
+					}
+					break;
 			}
 		}
 	}
@@ -140,18 +151,31 @@ public class Clock extends JFrame implements ActionListener {
 			switch (event.getKeyCode()) {
 				case KeyEvent.VK_RIGHT:
 					++gameTime;
+					updateGameClock();
 					break;
 				case KeyEvent.VK_LEFT:
-					--gameTime;
+					if (gameTime > 0) {
+						--gameTime;
+						updateGameClock();
+					}
 					break;
 				case KeyEvent.VK_UP:
-					gameTime+=60;
+					++shotTime;
+					shotClockField.setText(Integer.toString(shotTime));
 					break;
 				case KeyEvent.VK_DOWN:
-					gameTime-=60;
+					if (shotTime > 0) {
+						--shotTime;
+						shotClockField.setText(Integer.toString(shotTime));
+					}
+					break;
+				case KeyEvent.VK_F5:
+					log("stopping xpert mode");
+					removeKeyListener(this);
+					addKeyListener(keyListener);
+					getContentPane().setBackground(Color.ORANGE);
 					break;
 			}
-			updateGameClock();
 		}
 	}
 
@@ -189,6 +213,9 @@ public class Clock extends JFrame implements ActionListener {
 				}
 				updateGameClock();
 				shotClockField.setText(Integer.toString(shotTime));
+				if (gameTime == 60) {
+					SwingUtilities.invokeLater(new SoundClip("dingdong.wav"));
+				}
 			} else {
 				playTimeField.setText("0:00");
 				buzzer.start(); // no need for new buzzer, stopping anyway

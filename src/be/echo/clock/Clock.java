@@ -214,7 +214,8 @@ public class Clock extends JFrame implements ActionListener {
 				updateGameClock();
 				shotClockField.setText(Integer.toString(shotTime));
 				if (gameTime == 60) {
-					SwingUtilities.invokeLater(new SoundClip("dingdong.wav"));
+					SoundClip cp = new SoundClip("dingdong.wav");
+					cp.start();
 				}
 			} else {
 				playTimeField.setText("0:00");

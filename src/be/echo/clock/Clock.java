@@ -33,6 +33,16 @@ public class Clock extends JFrame implements ActionListener {
 
 	static private Timer timer;
 
+	private boolean shotClockEnabled = true;
+
+	private Font normalFont;
+
+	private Font largeFont;
+
+	private GridLayout normalLayout = new GridLayout(2, 1);
+
+	private GridLayout noShotClockLayout = new GridLayout(1, 1);
+
 	public Clock(int minutes) throws Exception {
 		super("Clock");
 
@@ -40,22 +50,22 @@ public class Clock extends JFrame implements ActionListener {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setBackground(Color.ORANGE);
 		
-		GridLayout manager = new GridLayout(2, 1);
-		setLayout(manager);
+		setLayout(normalLayout);
 
 		gameTimeField = new JLabel();
 		gameTimeField.setForeground(Color.BLACK);
 		gameTimeField.setHorizontalAlignment(SwingConstants.CENTER);
 
 		Font oldFont = gameTimeField.getFont();
-		Font f = oldFont.deriveFont(380f);
-		gameTimeField.setFont(f);
+		normalFont = oldFont.deriveFont(400f);
+		largeFont = oldFont.deriveFont(540f);
+		gameTimeField.setFont(normalFont);
 
 		add(gameTimeField);
 
 		shotTimeField = new JLabel(Integer.toString(shotTime));
 		add(shotTimeField);
-		shotTimeField.setFont(f);
+		shotTimeField.setFont(normalFont);
 		shotTimeField.setForeground(Color.BLACK);
 		shotTimeField.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -70,7 +80,6 @@ public class Clock extends JFrame implements ActionListener {
 		addMouseListener(mouseListener);
 		
 		pack();
-		
 		setExtendedState(Frame.MAXIMIZED_BOTH);
 	}
 
@@ -127,8 +136,30 @@ public class Clock extends JFrame implements ActionListener {
 						addKeyListener(clockAdjuster);
 					}
 					break;
+				case KeyEvent.VK_F9:
+					log("request toggle shot clock");
+					if (! timer.isRunning()) {
+						toggleShotClock();
+					}
+					break;
 			}
 		}
+	}
+
+	private void toggleShotClock() {
+		log("toggle shot clock");
+		if (shotClockEnabled) {
+			remove(shotTimeField);
+			setLayout(noShotClockLayout);
+			gameTimeField.setFont(largeFont);
+		} else {
+			gameTimeField.setFont(normalFont);
+			setLayout(normalLayout);
+			add(shotTimeField);
+		}
+		shotClockEnabled = ! shotClockEnabled;
+		pack();
+		setExtendedState(Frame.MAXIMIZED_BOTH);
 	}
 
 	private class ClockAdjuster extends KeyAdapter {
@@ -184,11 +215,19 @@ public class Clock extends JFrame implements ActionListener {
 	}
 
 	private void timeOutShotClock() {
-		log("shot time out at " + getCurrentTimes());
-		buzzer.start();
-		timer.stop();
-		getContentPane().setBackground(Color.CYAN);
-		buzzer = new Buzzer();
+		if (shotClockEnabled) {
+			log("shot time out at " + getCurrentTimes());
+			buzzer.start();
+			timer.stop();
+			getContentPane().setBackground(Color.CYAN);
+			buzzer = new Buzzer();
+		}
+	}
+
+	private void warnTimeOutShot() {
+		if (shotClockEnabled) {
+			toolkit.beep();
+		}
 	}
 	
 	private class TimeUpdater implements Runnable {
@@ -201,7 +240,7 @@ public class Clock extends JFrame implements ActionListener {
 				updateGameClock();
 				shotTimeField.setText(Integer.toString(shotTime));
 				if (shotTime <= 5 && shotTime > 0) {
-					toolkit.beep();
+					warnTimeOutShot();
 				} else if (shotTime == 0) {
 					timeOutShotClock();
 				}

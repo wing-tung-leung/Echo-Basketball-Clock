@@ -21,9 +21,9 @@ public class Clock extends JFrame implements ActionListener {
 
 	private SoundClip buzzer;
 
-	private JLabel playTimeField;
+	private JLabel gameTimeField;
 
-	private JLabel shotClockField;
+	private JLabel shotTimeField;
 
 	private Toolkit toolkit;
 
@@ -43,21 +43,21 @@ public class Clock extends JFrame implements ActionListener {
 		GridLayout manager = new GridLayout(2, 1);
 		setLayout(manager);
 
-		playTimeField = new JLabel();
-		playTimeField.setForeground(Color.BLACK);
-		playTimeField.setHorizontalAlignment(SwingConstants.CENTER);
+		gameTimeField = new JLabel();
+		gameTimeField.setForeground(Color.BLACK);
+		gameTimeField.setHorizontalAlignment(SwingConstants.CENTER);
 
-		Font oldFont = playTimeField.getFont();
+		Font oldFont = gameTimeField.getFont();
 		Font f = oldFont.deriveFont(380f);
-		playTimeField.setFont(f);
+		gameTimeField.setFont(f);
 
-		add(playTimeField);
+		add(gameTimeField);
 
-		shotClockField = new JLabel(Integer.toString(shotTime));
-		add(shotClockField);
-		shotClockField.setFont(f);
-		shotClockField.setForeground(Color.BLACK);
-		shotClockField.setHorizontalAlignment(SwingConstants.CENTER);
+		shotTimeField = new JLabel(Integer.toString(shotTime));
+		add(shotTimeField);
+		shotTimeField.setFont(f);
+		shotTimeField.setForeground(Color.BLACK);
+		shotTimeField.setHorizontalAlignment(SwingConstants.CENTER);
 
 		buzzer = new Buzzer();
 		gameTime = 60 * minutes;
@@ -89,7 +89,7 @@ public class Clock extends JFrame implements ActionListener {
 		if (timer.isRunning()) {
 			log("stop at " + getCurrentTimes());
 			timer.stop();
-			playTimeField.setForeground(Color.BLACK);
+			gameTimeField.setForeground(Color.BLACK);
 			getContentPane().setBackground(Color.ORANGE);
 		} else {
 			log("start at " + getCurrentTimes());
@@ -97,7 +97,7 @@ public class Clock extends JFrame implements ActionListener {
 				resetShotClock();
 			}
 			timer.start();
-			playTimeField.setForeground(Color.RED);
+			gameTimeField.setForeground(Color.RED);
 			getContentPane().setBackground(Color.WHITE);
 		}
 		beep(3);
@@ -146,12 +146,12 @@ public class Clock extends JFrame implements ActionListener {
 					break;
 				case KeyEvent.VK_UP:
 					++shotTime;
-					shotClockField.setText(Integer.toString(shotTime));
+					shotTimeField.setText(Integer.toString(shotTime));
 					break;
 				case KeyEvent.VK_DOWN:
 					if (shotTime > 0) {
 						--shotTime;
-						shotClockField.setText(Integer.toString(shotTime));
+						shotTimeField.setText(Integer.toString(shotTime));
 					}
 					break;
 				case KeyEvent.VK_F5:
@@ -165,8 +165,8 @@ public class Clock extends JFrame implements ActionListener {
 	}
 
 	private String getCurrentTimes() {
-		String gameTimeText = playTimeField.getText();
-		String shotTimeText = shotClockField.getText();
+		String gameTimeText = gameTimeField.getText();
+		String shotTimeText = shotTimeField.getText();
 		return "time=" + gameTimeText + ",shot=" + shotTimeText;
 	}
 
@@ -199,7 +199,7 @@ public class Clock extends JFrame implements ActionListener {
 					--shotTime;
 				}
 				updateGameClock();
-				shotClockField.setText(Integer.toString(shotTime));
+				shotTimeField.setText(Integer.toString(shotTime));
 				if (shotTime <= 5 && shotTime > 0) {
 					toolkit.beep();
 				} else if (shotTime == 0) {
@@ -210,7 +210,7 @@ public class Clock extends JFrame implements ActionListener {
 					cp.start();
 				}
 			} else {
-				playTimeField.setText("0:00");
+				gameTimeField.setText("0:00");
 				buzzer.start(); // no need for new buzzer, stopping anyway
 				timer.stop();
 			}
@@ -222,14 +222,14 @@ public class Clock extends JFrame implements ActionListener {
 		int seconds = gameTime % 60;
 		String padding = seconds < 10 ? "0" : "";
 		String secs = padding + seconds;
-		playTimeField.setText(minutes + ":" + secs);
+		gameTimeField.setText(minutes + ":" + secs);
 	}
 
 	private void resetShotClock() {
 		log("reset shot " + getCurrentTimes());
 		beep(1);
 		shotTime = DEFAULT_SHOT_SECONDS;
-		shotClockField.setText(Integer.toString(shotTime));
+		shotTimeField.setText(Integer.toString(shotTime));
 	}
 
 	public static void main(final String[] args) throws Exception {

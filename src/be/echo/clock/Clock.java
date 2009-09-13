@@ -33,12 +33,6 @@ public class Clock extends JFrame implements ActionListener {
 
 	static private Timer timer;
 
-	private class Buzzer extends SoundClip {
-		public Buzzer() {
-			super("buzz.wav");
-		}
-	}
-
 	public Clock(int minutes) throws Exception {
 		super("Clock");
 

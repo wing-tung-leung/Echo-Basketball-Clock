@@ -3,11 +3,11 @@ package be.echo.clock;
 import java.awt.*;
 import java.awt.LayoutManager;
 import java.awt.event.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import javax.swing.*;
 import javax.swing.event.*;
+
+import static be.echo.clock.Log.log;
 
 public class Clock extends JFrame implements ActionListener {
 
@@ -33,18 +33,10 @@ public class Clock extends JFrame implements ActionListener {
 
 	static private Timer timer;
 
-	private SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss");
-
 	private class Buzzer extends SoundClip {
 		public Buzzer() {
 			super("buzz.wav");
 		}
-	}
-
-	private void log(String text) {
-		System.out.print(timeFormat.format(new Date()));
-		System.out.print(" : ");
-		System.out.println(text);
 	}
 
 	public Clock(int minutes) throws Exception {
@@ -79,8 +71,6 @@ public class Clock extends JFrame implements ActionListener {
 		resetShotClock();
 		
 		addKeyListener(keyListener);
-		playTimeField.addKeyListener(keyListener);
-		shotClockField.addKeyListener(keyListener);
 
 		MouseListener mouseListener = new MouseListener();
 		addMouseListener(mouseListener);
@@ -103,12 +93,12 @@ public class Clock extends JFrame implements ActionListener {
 
 	private void toggleClock() {
 		if (timer.isRunning()) {
-			log("stop at " + gameTime);
+			log("stop at " + getCurrentTimes());
 			timer.stop();
 			playTimeField.setForeground(Color.BLACK);
 			getContentPane().setBackground(Color.ORANGE);
 		} else {
-			log("start at " + gameTime);
+			log("start at " + getCurrentTimes());
 			if (shotTime <= 0) {
 				resetShotClock();
 			}
@@ -137,6 +127,7 @@ public class Clock extends JFrame implements ActionListener {
 				case KeyEvent.VK_F5:
 					log("xpert request: timer running = " + timer.isRunning());
 					if (! timer.isRunning()) {
+						log("enter xpert: time=" + getCurrentTimes());
 						getContentPane().setBackground(Color.GRAY);
 						removeKeyListener(this);
 						addKeyListener(clockAdjuster);
@@ -170,13 +161,19 @@ public class Clock extends JFrame implements ActionListener {
 					}
 					break;
 				case KeyEvent.VK_F5:
-					log("stopping xpert mode");
+					log("exit xpert: time=" + getCurrentTimes());
 					removeKeyListener(this);
 					addKeyListener(keyListener);
 					getContentPane().setBackground(Color.ORANGE);
 					break;
 			}
 		}
+	}
+
+	private String getCurrentTimes() {
+		String gameTimeText = playTimeField.getText();
+		String shotTimeText = shotClockField.getText();
+		return "time=" + gameTimeText + ",shot=" + shotTimeText;
 	}
 
 	private class MouseListener extends MouseInputAdapter {
@@ -193,6 +190,7 @@ public class Clock extends JFrame implements ActionListener {
 	}
 
 	private void timeOutShotClock() {
+		log("shot time out at " + getCurrentTimes());
 		buzzer.start();
 		timer.stop();
 		getContentPane().setBackground(Color.CYAN);
@@ -205,14 +203,14 @@ public class Clock extends JFrame implements ActionListener {
 			if (gameTime > 0) {
 				if (shotTime > 0) {
 					--shotTime;
-					if (shotTime <= 5 && shotTime > 0) {
-						toolkit.beep();
-					} else if (shotTime == 0) {
-						timeOutShotClock();
-					}
 				}
 				updateGameClock();
 				shotClockField.setText(Integer.toString(shotTime));
+				if (shotTime <= 5 && shotTime > 0) {
+					toolkit.beep();
+				} else if (shotTime == 0) {
+					timeOutShotClock();
+				}
 				if (gameTime == 60) {
 					SoundClip cp = new SoundClip("dingdong.wav");
 					cp.start();
@@ -234,7 +232,7 @@ public class Clock extends JFrame implements ActionListener {
 	}
 
 	private void resetShotClock() {
-		log("resetShotClock()");
+		log("reset shot " + getCurrentTimes());
 		beep(1);
 		shotTime = DEFAULT_SHOT_SECONDS;
 		shotClockField.setText(Integer.toString(shotTime));
@@ -264,6 +262,5 @@ public class Clock extends JFrame implements ActionListener {
 
 	public void actionPerformed(ActionEvent event) {
 		SwingUtilities.invokeLater(new TimeUpdater());
-//		this.repaint(100);
 	}
 }

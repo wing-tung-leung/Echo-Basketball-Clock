@@ -250,8 +250,9 @@ public class Clock extends JFrame implements ActionListener {
 				}
 			} else {
 				gameTimeField.setText("0:00");
-				buzzer.start(); // no need for new buzzer, stopping anyway
 				timer.stop();
+				buzzer.start();
+				buzzer = new Buzzer(); // maybe re-adding time manually
 			}
 		}
 	}

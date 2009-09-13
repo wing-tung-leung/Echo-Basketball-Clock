@@ -5,6 +5,8 @@ import java.net.URL;
 import javax.sound.sampled.*;
 import javax.swing.*;
 
+import static be.echo.clock.Log.log;
+
 public class SoundClip extends Thread {
 
 	private final String fileName;
@@ -16,7 +18,7 @@ public class SoundClip extends Thread {
 	public SoundClip(String fileName) {
 		try {
 			this.fileName = fileName;
-			System.out.println("loading " + fileName);
+			log("loading " + fileName);
 			URL url = this.getClass().getClassLoader().getResource(fileName);
 			AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
 			clip = AudioSystem.getClip();
@@ -33,10 +35,10 @@ public class SoundClip extends Thread {
 	public void run() {
 		try {
 			clip.start();
-			System.out.println("started " + fileName);
+			log("started " + fileName);
 			Thread.sleep(soundLength / 1000);
 			clip.close();
-			System.out.println("closed " + fileName);
+			log("closed " + fileName);
 
 		} catch (RuntimeException e) {
 			throw e;

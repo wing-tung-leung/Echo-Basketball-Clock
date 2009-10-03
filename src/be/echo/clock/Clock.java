@@ -84,7 +84,7 @@ public class Clock extends JFrame implements ActionListener {
 		addMouseListener(mouseListener);
 		
 		pack();
-		//setExtendedState(Frame.MAXIMIZED_BOTH);
+		setExtendedState(Frame.MAXIMIZED_BOTH);
 	}
 
 	private void beep(int count) {
@@ -113,7 +113,7 @@ public class Clock extends JFrame implements ActionListener {
 			gameTimeField.setForeground(Color.RED);
 			getContentPane().setBackground(Color.WHITE);
 		}
-		beep(3);
+		beep(2);
 	}
 	
 	private class KeyListener extends KeyAdapter {
@@ -123,15 +123,17 @@ public class Clock extends JFrame implements ActionListener {
 			}
 		}
 		public void keyReleased(KeyEvent e) {
-			if (e.getKeyChar() == '\n') {
-				startShotClock();
+			switch (e.getKeyChar()) {
+				case '\n':
+					startShotClock();
+					break;
+				case ' ':
+					toggleClock();
+					break;
 			}
 		}
 		public void keyPressed(KeyEvent event) {
 			switch (event.getKeyCode()) {
-				case KeyEvent.VK_SPACE:
-					toggleClock();
-					break;
 				case KeyEvent.VK_ESCAPE:
 					log("buzz request: timer running = " + timer.isRunning());
 					if (! timer.isRunning()) {

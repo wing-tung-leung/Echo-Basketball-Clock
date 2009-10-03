@@ -15,9 +15,13 @@ public class Clock extends JFrame implements ActionListener {
 
 	private final static int DEFAULT_SHOT_SECONDS = 24;
 
-	private int gameTime;
+	private final static int PAUZED_SHOT_TIME = -1;
 
-	private int shotTime;
+	private final static String PAUZED_SHOT_TEXT = "= 24 =";
+
+	private int gameTime = MINUTES_IN_QUARTER;
+
+	private int shotTime = PAUZED_SHOT_TIME;
 
 	private SoundClip buzzer;
 
@@ -63,7 +67,7 @@ public class Clock extends JFrame implements ActionListener {
 
 		add(gameTimeField);
 
-		shotTimeField = new JLabel(Integer.toString(shotTime));
+		shotTimeField = new JLabel(PAUZED_SHOT_TEXT);
 		add(shotTimeField);
 		shotTimeField.setFont(normalFont);
 		shotTimeField.setForeground(Color.BLACK);
@@ -80,7 +84,7 @@ public class Clock extends JFrame implements ActionListener {
 		addMouseListener(mouseListener);
 		
 		pack();
-		setExtendedState(Frame.MAXIMIZED_BOTH);
+		//setExtendedState(Frame.MAXIMIZED_BOTH);
 	}
 
 	private void beep(int count) {
@@ -113,13 +117,20 @@ public class Clock extends JFrame implements ActionListener {
 	}
 	
 	private class KeyListener extends KeyAdapter {
+		public void keyTyped(KeyEvent e) {
+			if (e.getKeyChar() == '\n') {
+				resetShotClock();
+			}
+		}
+		public void keyReleased(KeyEvent e) {
+			if (e.getKeyChar() == '\n') {
+				startShotClock();
+			}
+		}
 		public void keyPressed(KeyEvent event) {
 			switch (event.getKeyCode()) {
 				case KeyEvent.VK_SPACE:
 					toggleClock();
-					break;
-				case KeyEvent.VK_ENTER:
-					resetShotClock();
 					break;
 				case KeyEvent.VK_ESCAPE:
 					log("buzz request: timer running = " + timer.isRunning());
@@ -236,9 +247,9 @@ public class Clock extends JFrame implements ActionListener {
 			if (gameTime > 0) {
 				if (shotTime > 0) {
 					--shotTime;
+					shotTimeField.setText(Integer.toString(shotTime));
 				}
 				updateGameClock();
-				shotTimeField.setText(Integer.toString(shotTime));
 				if (shotTime <= 5 && shotTime > 0) {
 					warnTimeOutShot();
 				} else if (shotTime == 0) {
@@ -266,10 +277,17 @@ public class Clock extends JFrame implements ActionListener {
 	}
 
 	private void resetShotClock() {
-		log("reset shot " + getCurrentTimes());
-		beep(1);
+		if (shotTime >= 0) {
+			shotTime = PAUZED_SHOT_TIME;
+			log("reset/stop shot " + getCurrentTimes());
+			shotTimeField.setText(PAUZED_SHOT_TEXT);
+		}
+	}
+
+	private void startShotClock() {
 		shotTime = DEFAULT_SHOT_SECONDS;
 		shotTimeField.setText(Integer.toString(shotTime));
+		log("start shot " + getCurrentTimes());
 	}
 
 	public static void main(final String[] args) throws Exception {
@@ -283,7 +301,7 @@ public class Clock extends JFrame implements ActionListener {
 					Clock frame = new Clock(minutes);
 					frame.setVisible(true);
 					timer = new Timer(1000, frame);
-					timer.setInitialDelay(500);
+					timer.setInitialDelay(1000);
 				
 				} catch (RuntimeException e) {
 					throw e;

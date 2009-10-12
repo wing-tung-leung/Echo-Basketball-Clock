@@ -251,7 +251,7 @@ public class Clock extends JFrame implements ActionListener {
 					shotTimeField.setText(Integer.toString(shotTime));
 				}
 				updateGameClock();
-				if (shotTime <= 5 && shotTime > 0) {
+				if (shotTime <= 3 && shotTime > 0) {
 					warnTimeOutShot();
 				} else if (shotTime == 0) {
 					timeOutShotClock();

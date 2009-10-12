@@ -113,7 +113,6 @@ public class Clock extends JFrame implements ActionListener {
 			gameTimeField.setForeground(Color.RED);
 			getContentPane().setBackground(Color.WHITE);
 		}
-		beep(2);
 	}
 	
 	private class KeyListener extends KeyAdapter {

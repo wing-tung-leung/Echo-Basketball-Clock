@@ -168,15 +168,16 @@ public class Clock extends JFrame implements ActionListener {
 		GridBagConstraints gameClockConstraints = new GridBagConstraints();
 		gameClockConstraints.anchor = GridBagConstraints.NORTH;
 		gameClockConstraints.gridwidth = GridBagConstraints.REMAINDER;
+		gameClockConstraints.weighty = 1;
 
 		GridBagConstraints shotClockConstraints = new GridBagConstraints();
 		shotClockConstraints.anchor = GridBagConstraints.CENTER;
 		shotClockConstraints.gridwidth = GridBagConstraints.REMAINDER;
 
 		GridBagConstraints helpBoxConstraints = new GridBagConstraints();
-		helpBoxConstraints.fill = GridBagConstraints.BOTH;
 		helpBoxConstraints.gridwidth = GridBagConstraints.REMAINDER;
 		helpBoxConstraints.anchor = GridBagConstraints.SOUTH;
+		helpBoxConstraints.weighty = 1;
 
 		normalLayout.setConstraints(gameTimeField, gameClockConstraints);
 		normalLayout.setConstraints(shotTimeField, shotClockConstraints);
@@ -346,7 +347,7 @@ public class Clock extends JFrame implements ActionListener {
 	}
 
 	public String getHelpText() {
-		String separator = "  -- -- --  ";
+		String separator = "            ";
 		StringBuilder b = new StringBuilder();
 		b.append("<SPACE>: start/stop game clock");
 		b.append(separator);

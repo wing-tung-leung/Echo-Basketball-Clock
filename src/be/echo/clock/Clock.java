@@ -160,6 +160,16 @@ public class Clock extends JFrame implements ActionListener {
 						toggleShotClock();
 					}
 					break;
+				case KeyEvent.VK_F12:
+					if (event.isControlDown()) {
+						log("request reset");
+						if (! timer.isRunning()) {
+							gameTime = 60 * MINUTES_IN_QUARTER;
+							updateGameClock();
+							resetShotClock();
+						}
+					}
+					break;
 			}
 		}
 	}
@@ -347,7 +357,7 @@ public class Clock extends JFrame implements ActionListener {
 	}
 
 	public String getHelpText() {
-		String separator = "            ";
+		String separator = "        ";
 		StringBuilder b = new StringBuilder();
 		b.append("<SPACE>: start/stop game clock");
 		b.append(separator);
@@ -355,9 +365,11 @@ public class Clock extends JFrame implements ActionListener {
 		b.append(separator);
 		b.append("<ESC>: buzzer");
 		b.append(separator);
-		b.append("<F5>: modify time using arrows");
+		b.append("F5: modify time using arrows");
 		b.append(separator);
-		b.append("<F9>: enable/disable shot clock");
+		b.append("F9: enable/disable shot clock");
+		b.append(separator);
+		b.append("Ctrl+F12: new quarter!");
 		return b.toString();
 	}
 }

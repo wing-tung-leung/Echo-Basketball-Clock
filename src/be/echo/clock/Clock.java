@@ -29,6 +29,8 @@ public class Clock extends JFrame implements ActionListener {
 
 	private JLabel shotTimeField;
 
+	private JLabel helpText;
+
 	private Toolkit toolkit;
 
 	private ClockAdjuster clockAdjuster = new ClockAdjuster();
@@ -43,9 +45,7 @@ public class Clock extends JFrame implements ActionListener {
 
 	private Font largeFont;
 
-	private GridLayout normalLayout = new GridLayout(2, 1);
-
-	private GridLayout noShotClockLayout = new GridLayout(1, 1);
+	private GridBagLayout normalLayout = new GridBagLayout();
 
 	public Clock(int minutes) throws Exception {
 		super("Clock");
@@ -53,25 +53,31 @@ public class Clock extends JFrame implements ActionListener {
 		toolkit = getToolkit();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setBackground(Color.ORANGE);
-		
-		setLayout(normalLayout);
 
 		gameTimeField = new JLabel();
 		gameTimeField.setForeground(Color.BLACK);
 		gameTimeField.setHorizontalAlignment(SwingConstants.CENTER);
 
 		Font oldFont = gameTimeField.getFont();
-		normalFont = oldFont.deriveFont(400f);
+		normalFont = oldFont.deriveFont(380f);
 		largeFont = oldFont.deriveFont(500f);
 		gameTimeField.setFont(normalFont);
 
-		add(gameTimeField);
-
 		shotTimeField = new JLabel(PAUZED_SHOT_TEXT);
-		add(shotTimeField);
 		shotTimeField.setFont(normalFont);
 		shotTimeField.setForeground(Color.BLACK);
 		shotTimeField.setHorizontalAlignment(SwingConstants.CENTER);
+
+		helpText = new JLabel(getHelpText());
+		helpText.setHorizontalAlignment(SwingConstants.CENTER);
+
+		setNormalLayout();
+
+		setLayout(normalLayout);
+
+		add(gameTimeField);
+		add(shotTimeField);
+		add(helpText);
 
 		buzzer = new Buzzer();
 		gameTime = 60 * minutes;
@@ -158,16 +164,38 @@ public class Clock extends JFrame implements ActionListener {
 		}
 	}
 
+	private void setNormalLayout() {
+		GridBagConstraints gameClockConstraints = new GridBagConstraints();
+		gameClockConstraints.anchor = GridBagConstraints.NORTH;
+		gameClockConstraints.gridwidth = GridBagConstraints.REMAINDER;
+
+		GridBagConstraints shotClockConstraints = new GridBagConstraints();
+		shotClockConstraints.anchor = GridBagConstraints.CENTER;
+		shotClockConstraints.gridwidth = GridBagConstraints.REMAINDER;
+
+		GridBagConstraints helpBoxConstraints = new GridBagConstraints();
+		helpBoxConstraints.fill = GridBagConstraints.BOTH;
+		helpBoxConstraints.gridwidth = GridBagConstraints.REMAINDER;
+		helpBoxConstraints.anchor = GridBagConstraints.SOUTH;
+
+		normalLayout.setConstraints(gameTimeField, gameClockConstraints);
+		normalLayout.setConstraints(shotTimeField, shotClockConstraints);
+		normalLayout.setConstraints(helpText, helpBoxConstraints);
+	}
+
 	private void toggleShotClock() {
 		log("toggle shot clock");
 		if (shotClockEnabled) {
 			remove(shotTimeField);
-			setLayout(noShotClockLayout);
 			gameTimeField.setFont(largeFont);
 		} else {
 			gameTimeField.setFont(normalFont);
-			setLayout(normalLayout);
+			remove(gameTimeField);
+			remove(helpText);
+			setNormalLayout();
+			add(gameTimeField);
 			add(shotTimeField);
+			add(helpText);
 		}
 		shotClockEnabled = ! shotClockEnabled;
 		pack();
@@ -315,5 +343,20 @@ public class Clock extends JFrame implements ActionListener {
 
 	public void actionPerformed(ActionEvent event) {
 		SwingUtilities.invokeLater(new TimeUpdater());
+	}
+
+	public String getHelpText() {
+		String separator = "  -- -- --  ";
+		StringBuilder b = new StringBuilder();
+		b.append("<SPACE>: start/stop game clock");
+		b.append(separator);
+		b.append("<ENTER>: reset shot clock, release to start");
+		b.append(separator);
+		b.append("<ESC>: buzzer");
+		b.append(separator);
+		b.append("<F5>: modify time using arrows");
+		b.append(separator);
+		b.append("<F9>: enable/disable shot clock");
+		return b.toString();
 	}
 }

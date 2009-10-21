@@ -295,10 +295,6 @@ public class Clock extends JFrame implements ActionListener {
 				} else if (shotTime == 0) {
 					timeOutShotClock();
 				}
-				if (gameTime == 60) {
-					SoundClip cp = new SoundClip("dingdong.wav");
-					cp.start();
-				}
 			} else {
 				gameTimeField.setText("0:00");
 				timer.stop();

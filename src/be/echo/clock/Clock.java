@@ -23,7 +23,7 @@ public class Clock extends JFrame implements ActionListener {
 
 	private int shotTime = PAUZED_SHOT_TIME;
 
-	private SoundClip buzzer;
+	private SoundClip buzzer = new Buzzer();
 
 	private JLabel gameTimeField;
 
@@ -73,7 +73,6 @@ public class Clock extends JFrame implements ActionListener {
 		add(gameTimeField);
 		add(shotTimeField);
 
-		buzzer = new Buzzer();
 		gameTime = 60 * minutes;
 		updateGameClock();
 		resetShotClock();
@@ -136,7 +135,7 @@ public class Clock extends JFrame implements ActionListener {
 				case KeyEvent.VK_ESCAPE:
 					log("buzz request: timer running = " + timer.isRunning());
 					if (! timer.isRunning()) {
-						SwingUtilities.invokeLater(new Buzzer());
+						buzzer.play();
 					}
 					break;
 				case KeyEvent.VK_F5:
@@ -254,10 +253,9 @@ public class Clock extends JFrame implements ActionListener {
 	private void timeOutShotClock() {
 		if (shotClockEnabled) {
 			log("shot time out at " + getCurrentTimes());
-			buzzer.start();
+			buzzer.play();
 			timer.stop();
 			getContentPane().setBackground(Color.CYAN);
-			buzzer = new Buzzer();
 		}
 	}
 
@@ -284,8 +282,7 @@ public class Clock extends JFrame implements ActionListener {
 			} else {
 				gameTimeField.setText("0:00");
 				timer.stop();
-				buzzer.start();
-				buzzer = new Buzzer(); // maybe re-adding time manually
+				buzzer.play();
 			}
 		}
 	}

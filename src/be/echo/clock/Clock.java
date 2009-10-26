@@ -57,7 +57,7 @@ public class Clock extends JFrame implements ActionListener {
 		gameTimeField.setHorizontalAlignment(SwingConstants.CENTER);
 
 		Font oldFont = gameTimeField.getFont();
-		normalFont = oldFont.deriveFont(380f);
+		normalFont = oldFont.deriveFont(420f);
 		largeFont = oldFont.deriveFont(500f);
 		gameTimeField.setFont(normalFont);
 

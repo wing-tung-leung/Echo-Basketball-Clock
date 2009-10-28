@@ -46,7 +46,7 @@ public class Clock extends JFrame implements ActionListener {
 	private GridBagLayout normalLayout = new GridBagLayout();
 
 	public Clock(int minutes) throws Exception {
-		super("Clock Control = " + getHelpText());
+		super("Clock == " + getHelpText());
 
 		toolkit = getToolkit();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -57,7 +57,7 @@ public class Clock extends JFrame implements ActionListener {
 		gameTimeField.setHorizontalAlignment(SwingConstants.CENTER);
 
 		Font oldFont = gameTimeField.getFont();
-		normalFont = oldFont.deriveFont(420f);
+		normalFont = oldFont.deriveFont(380f);
 		largeFont = oldFont.deriveFont(500f);
 		gameTimeField.setFont(normalFont);
 

@@ -83,7 +83,15 @@ public class Clock extends JFrame implements ActionListener {
 		addMouseListener(mouseListener);
 		
 		pack();
+
 		setExtendedState(Frame.MAXIMIZED_BOTH);
+		Dimension dimension = getSize();
+		float fontSize = ((float) dimension.height - 50) / 2;
+		log("font size = " + fontSize);
+
+		normalFont = oldFont.deriveFont(fontSize);
+		gameTimeField.setFont(normalFont);
+		shotTimeField.setFont(normalFont);
 	}
 
 	private void beep(int count) {

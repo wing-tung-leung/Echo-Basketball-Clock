@@ -86,10 +86,13 @@ public class Clock extends JFrame implements ActionListener {
 
 		setExtendedState(Frame.MAXIMIZED_BOTH);
 		Dimension dimension = getSize();
-		float fontSize = ((float) dimension.height - 50) / 2;
+		final float fontSize = ((float) dimension.height - 50) / 2;
 		log("font size = " + fontSize);
+		final float largeFontSize = ((float) dimension.width / 2);
+		log("large font size = " + largeFontSize);
 
 		normalFont = oldFont.deriveFont(fontSize);
+		largeFont = oldFont.deriveFont(largeFontSize);
 		gameTimeField.setFont(normalFont);
 		shotTimeField.setFont(normalFont);
 	}

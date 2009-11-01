@@ -17,7 +17,7 @@ public class Clock extends JFrame implements ActionListener {
 
 	private final static int PAUZED_SHOT_TIME = -1;
 
-	private final static String PAUZED_SHOT_TEXT = "= 24 =";
+	private final static String PAUZED_SHOT_TEXT = ": 24 :";
 
 	private int gameTime = MINUTES_IN_QUARTER;
 

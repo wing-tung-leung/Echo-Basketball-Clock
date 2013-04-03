@@ -19,6 +19,8 @@ public class Clock extends JFrame implements ActionListener {
 
 	private final static String PAUZED_SHOT_TEXT = ": 24 :";
 
+	private final static String RESET14_SHOT_TEXT = ".14.";
+
 	private int gameTime = MINUTES_IN_QUARTER;
 
 	private int shotTime = PAUZED_SHOT_TIME;
@@ -46,7 +48,7 @@ public class Clock extends JFrame implements ActionListener {
 	private GridBagLayout normalLayout = new GridBagLayout();
 
 	public Clock(int minutes) throws Exception {
-		super("Clock == " + getHelpText());
+		super(getHelpText());
 
 		toolkit = getToolkit();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -116,7 +118,9 @@ public class Clock extends JFrame implements ActionListener {
 			getContentPane().setBackground(Color.ORANGE);
 		} else {
 			log("start at " + getCurrentTimes());
-			if (shotTime <= 0) {
+			if (shotTimeField.getText().equals(RESET14_SHOT_TEXT)) {
+				start14ShotClock();
+			} else if (shotTime <= 0) {
 				resetShotClock();
 			}
 			timer.start();
@@ -250,12 +254,23 @@ public class Clock extends JFrame implements ActionListener {
 
 	private class MouseListener extends MouseInputAdapter {
 		public void mouseClicked(MouseEvent e) {
+		}
+		public void mousePressed(MouseEvent e) {
 			switch (e.getButton()) {
 				case MouseEvent.BUTTON1:
-					toggleClock();
+					// BEWARE: previously clock toggle
+					resetShotClock();
 					break;
 				case MouseEvent.BUTTON3:
-					resetShotClock();
+					// BEWARE: previously shot reset
+					reset14ShotClock();
+					break;
+			}
+		}
+		public void mouseReleased(MouseEvent e) {
+			switch (e.getButton()) {
+				case MouseEvent.BUTTON1:
+					startShotClock();
 					break;
 			}
 		}
@@ -314,10 +329,33 @@ public class Clock extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * Triggered upon defensive foul in frontcourt.
+	 * Safety: only working when game clock is paused.
+	 */
+	private void reset14ShotClock() {
+		if (! shotClockEnabled) {
+			return;
+		}
+		if (!timer.isRunning() && shotTime > 0 && shotTime < 14) {
+			shotTime = 14;
+			log("reset/stop shot14 " + getCurrentTimes());
+			shotTimeField.setText(RESET14_SHOT_TEXT);
+		}
+	}
+
 	private void startShotClock() {
 		shotTime = DEFAULT_SHOT_SECONDS;
 		shotTimeField.setText(Integer.toString(shotTime));
 		log("start shot " + getCurrentTimes());
+	}
+
+	private void start14ShotClock() {
+		if (! shotClockEnabled) {
+			return;
+		}
+		shotTimeField.setText(Integer.toString(shotTime));
+		log("start 14 shot " + getCurrentTimes());
 	}
 
 	public static void main(final String[] args) throws Exception {
@@ -349,15 +387,17 @@ public class Clock extends JFrame implements ActionListener {
 	static public String getHelpText() {
 		String separator = " | ";
 		StringBuilder b = new StringBuilder();
-		b.append("<Space>: start/stop game clock");
+		b.append("<Space>: toggle clock");
 		b.append(separator);
-		b.append("<Enter>: reset shot clock, release to start");
+		b.append("Mouse L: 24s reset shot");
+		b.append(separator);
+		b.append("Mouse R: 14s reset shot");
 		b.append(separator);
 		b.append("<ESC>: buzzer");
 		b.append(separator);
-		b.append("F5: modify time using arrows");
+		b.append("F5: edit time (arrows)");
 		b.append(separator);
-		b.append("F9: enable/disable shot clock");
+		b.append("F9: switch shot clock");
 		b.append(separator);
 		b.append("Ctrl+F12: new quarter!");
 		return b.toString();

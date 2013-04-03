@@ -1,11 +1,26 @@
-<project name="echo" default="compile">
+<project name="echo" default="jar">
+
+	<target name="clean">
+		<delete dir="build"/>
+	</target>
 
 	<target name="compile">
-		<javac srcdir="src" destdir="bin" debug="true"/>
-		<manifest file="bin/META-INF/MANIFEST.MF">
-			<attribute name="Main-Class" value="be.echo.clock.Clock"/>
-		</manifest>
-		<jar destfile="clock.jar" basedir="bin" manifest="bin/META-INF/MANIFEST.MF"/>
+		<mkdir dir="build/classses" />
+		<javac srcdir="src" destdir="build/classes/" debug="true" includeAntRuntime="false"/>
+	</target>
+
+	<target name="jar" depends="compile">
+		<copy file="buzz.wav" todir="build/classes"/>
+		<copy file="dingdong.wav" todir="build/classes"/>
+		<jar destfile="build/jar/clock.jar" basedir="build/classes">
+			<manifest>
+				<attribute name="Main-Class" value="be.echo.clock.Clock"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="run">
+		<java jar="build/jar/clock.jar" fork="true"/>
 	</target>
 
 </project>

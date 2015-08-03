@@ -5,7 +5,7 @@
 	</target>
 
 	<target name="compile">
-		<mkdir dir="build/classses" />
+		<mkdir dir="build/classes" />
 		<javac srcdir="src" destdir="build/classes/" debug="true" includeAntRuntime="false"/>
 	</target>
 

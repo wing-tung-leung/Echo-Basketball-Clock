@@ -4,3 +4,13 @@ the players and referees.
 No scoreboard or foul registration included because of limited screen sizes.
 
 
+Quick help in title bar, most important keyboard keys:
+* <Space> : start stop game clock
+* <Enter> : reset 24 second shot clock
+* f : reset to 14 second shot clock
+
+Alternative control via mouse buttons to reset shot clocks:
+* left : 24 seconds
+* right : 14 seconds
+
+BEWARE: 14 seconds only available when game clock is STOPPED.

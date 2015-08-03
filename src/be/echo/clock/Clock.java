@@ -143,6 +143,9 @@ public class Clock extends JFrame implements ActionListener {
 				case ' ':
 					toggleClock();
 					break;
+				case 'f':
+					reset14ShotClock();
+					break;
 			}
 		}
 		public void keyPressed(KeyEvent event) {
@@ -337,7 +340,7 @@ public class Clock extends JFrame implements ActionListener {
 		if (! shotClockEnabled) {
 			return;
 		}
-		if (!timer.isRunning() && shotTime > 0 && shotTime < 14) {
+		if (!timer.isRunning()) {
 			shotTime = 14;
 			log("reset/stop shot14 " + getCurrentTimes());
 			shotTimeField.setText(RESET14_SHOT_TEXT);
@@ -389,9 +392,9 @@ public class Clock extends JFrame implements ActionListener {
 		StringBuilder b = new StringBuilder();
 		b.append("<Space>: toggle clock");
 		b.append(separator);
-		b.append("Mouse L: 24s reset shot");
+		b.append("<Enter>/Mouse L: 24s reset shot");
 		b.append(separator);
-		b.append("Mouse R: 14s reset shot");
+		b.append("f/Mouse R: 14s reset shot");
 		b.append(separator);
 		b.append("<ESC>: buzzer");
 		b.append(separator);

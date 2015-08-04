@@ -15,11 +15,13 @@ public class Clock extends JFrame implements ActionListener {
 
 	private final static int DEFAULT_SHOT_SECONDS = 24;
 
+	private final static int REDUCED_SHOT_SECONDS = 14;
+
 	private final static int PAUZED_SHOT_TIME = -1;
 
-	private final static String PAUZED_SHOT_TEXT = ": 24 :";
+	private final static String RESET24_SHOT_TEXT = ": 24 :";
 
-	private final static String RESET14_SHOT_TEXT = ".14.";
+	private final static String RESET14_SHOT_TEXT = ". 14 .";
 
 	private int gameTime = MINUTES_IN_QUARTER;
 
@@ -63,7 +65,7 @@ public class Clock extends JFrame implements ActionListener {
 		largeFont = oldFont.deriveFont(500f);
 		gameTimeField.setFont(normalFont);
 
-		shotTimeField = new JLabel(PAUZED_SHOT_TEXT);
+		shotTimeField = new JLabel(RESET24_SHOT_TEXT);
 		shotTimeField.setFont(normalFont);
 		shotTimeField.setForeground(Color.BLACK);
 		shotTimeField.setHorizontalAlignment(SwingConstants.CENTER);
@@ -77,7 +79,7 @@ public class Clock extends JFrame implements ActionListener {
 
 		gameTime = 60 * minutes;
 		updateGameClock();
-		resetShotClock();
+		resetShotClock(RESET24_SHOT_TEXT);
 		
 		addKeyListener(keyListener);
 
@@ -119,9 +121,9 @@ public class Clock extends JFrame implements ActionListener {
 		} else {
 			log("start at " + getCurrentTimes());
 			if (shotTimeField.getText().equals(RESET14_SHOT_TEXT)) {
-				start14ShotClock();
+				startShotClock(REDUCED_SHOT_SECONDS);
 			} else if (shotTime <= 0) {
-				resetShotClock();
+				resetShotClock(RESET24_SHOT_TEXT);
 			}
 			timer.start();
 			gameTimeField.setForeground(Color.RED);
@@ -132,19 +134,21 @@ public class Clock extends JFrame implements ActionListener {
 	private class KeyListener extends KeyAdapter {
 		public void keyTyped(KeyEvent e) {
 			if (e.getKeyChar() == '\n') {
-				resetShotClock();
+				resetShotClock(RESET24_SHOT_TEXT);
+			} else if (e.getKeyChar() == 'f') {
+				resetShotClock(RESET14_SHOT_TEXT);
 			}
 		}
 		public void keyReleased(KeyEvent e) {
 			switch (e.getKeyChar()) {
 				case '\n':
-					startShotClock();
+					startShotClock(DEFAULT_SHOT_SECONDS);
 					break;
 				case ' ':
 					toggleClock();
 					break;
 				case 'f':
-					reset14ShotClock();
+					startShotClock(REDUCED_SHOT_SECONDS);
 					break;
 			}
 		}
@@ -177,7 +181,7 @@ public class Clock extends JFrame implements ActionListener {
 						if (! timer.isRunning()) {
 							gameTime = 60 * MINUTES_IN_QUARTER;
 							updateGameClock();
-							resetShotClock();
+							resetShotClock(RESET24_SHOT_TEXT);
 						}
 					}
 					break;
@@ -262,18 +266,21 @@ public class Clock extends JFrame implements ActionListener {
 			switch (e.getButton()) {
 				case MouseEvent.BUTTON1:
 					// BEWARE: previously clock toggle
-					resetShotClock();
+					resetShotClock(RESET24_SHOT_TEXT);
 					break;
 				case MouseEvent.BUTTON3:
 					// BEWARE: previously shot reset
-					reset14ShotClock();
+					resetShotClock(RESET14_SHOT_TEXT);
 					break;
 			}
 		}
 		public void mouseReleased(MouseEvent e) {
 			switch (e.getButton()) {
 				case MouseEvent.BUTTON1:
-					startShotClock();
+					startShotClock(DEFAULT_SHOT_SECONDS);
+					break;
+				case MouseEvent.BUTTON3:
+					startShotClock(REDUCED_SHOT_SECONDS);
 					break;
 			}
 		}
@@ -324,41 +331,23 @@ public class Clock extends JFrame implements ActionListener {
 		gameTimeField.setText(minutes + ":" + secs);
 	}
 
-	private void resetShotClock() {
+	private void resetShotClock(String shotClockText) {
+		if (! shotClockEnabled) {
+			return;
+		}
 		if (shotTime >= 0) {
 			shotTime = PAUZED_SHOT_TIME;
-			log("reset/stop shot " + getCurrentTimes());
-			shotTimeField.setText(PAUZED_SHOT_TEXT);
+			log("reset/stop shot " + shotClockText + ": " + getCurrentTimes());
+			shotTimeField.setText(shotClockText);
 		}
 	}
 
-	/**
-	 * Triggered upon defensive foul in frontcourt.
-	 * Safety: only working when game clock is paused.
-	 */
-	private void reset14ShotClock() {
-		if (! shotClockEnabled) {
-			return;
+	private void startShotClock(int seconds) {
+		shotTime = seconds;
+		if (timer.isRunning()) {
+			shotTimeField.setText(Integer.toString(shotTime));
+			log("start shot " + seconds + ": " + getCurrentTimes());
 		}
-		if (!timer.isRunning()) {
-			shotTime = 14;
-			log("reset/stop shot14 " + getCurrentTimes());
-			shotTimeField.setText(RESET14_SHOT_TEXT);
-		}
-	}
-
-	private void startShotClock() {
-		shotTime = DEFAULT_SHOT_SECONDS;
-		shotTimeField.setText(Integer.toString(shotTime));
-		log("start shot " + getCurrentTimes());
-	}
-
-	private void start14ShotClock() {
-		if (! shotClockEnabled) {
-			return;
-		}
-		shotTimeField.setText(Integer.toString(shotTime));
-		log("start 14 shot " + getCurrentTimes());
 	}
 
 	public static void main(final String[] args) throws Exception {
